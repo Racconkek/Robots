@@ -2,6 +2,8 @@ package gui;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JDesktopPane;
@@ -96,30 +98,29 @@ public class MainApplicationFrame extends JFrame
 //        return menuBar;
 //    }
 
-
-
     private JMenuBar generateMenuBar()
     {
         JMenuBar menuBar = new JMenuBar();
 
+
         var lookAndFeelMenu = createJMenu("Режим отображения",
             KeyEvent.VK_V, "Управление режимом отображения приложения");
-
-        //возможно, фигурные скобонькидля того, чтобы одна из ссылок удалилась из-за выхода из блока.
-        //т.е. у нас две ссылки у переменной и у jменю, и переменная нам больше не нужна
+        var testMenu = createJMenu("Тесты", KeyEvent.VK_T, "Тестовые команды");
         {
-            var systemLookAndFeel = createJMenuItemForLookAndFeelMenu("Системная схема", KeyEvent.VK_S);
+            var systemLookAndFeel = createJMenuItem("Системная схема", KeyEvent.VK_S,
+                    (event) -> {
+                        setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                        this.invalidate(); });
             lookAndFeelMenu.add(systemLookAndFeel);
-        }
 
-        {
-            var crossplatformLookAndFeel = createJMenuItemForLookAndFeelMenu("Универсальная схема", KeyEvent.VK_S);
+            var crossplatformLookAndFeel = createJMenuItem("Универсальная схема", KeyEvent.VK_S,
+                    (event) -> {
+                        setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                        this.invalidate();});
             lookAndFeelMenu.add(crossplatformLookAndFeel);
-        }
 
-    var testMenu = createJMenu("Тесты", KeyEvent.VK_T, "Тестовые команды");
-        {
-            var addLogMessageItem = createJMenuItemForTestMenu("Сообщение в лог", KeyEvent.VK_S, "Новая строка");
+            var addLogMessageItem = createJMenuItem("Сообщение в лог", KeyEvent.VK_S,
+                     (event) -> {Logger.debug("Новая строка");});
             testMenu.add(addLogMessageItem);
         }
 
@@ -129,24 +130,11 @@ public class MainApplicationFrame extends JFrame
     }
 
 
-    private JMenuItem createJMenuItemForLookAndFeelMenu(String text, int mnemonic){
+    private JMenuItem createJMenuItem(String text, int mnemonic, ActionListener action){
         var jMenuItem = new JMenuItem(text, mnemonic);
-        jMenuItem.addActionListener((event) -> {
-            setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            this.invalidate(); });
-
+        jMenuItem.addActionListener(action);
         return jMenuItem;
     }
-
-
-    private JMenuItem createJMenuItemForTestMenu(String text, int mnemonic, String strMessage){
-        var jMenuItem = new JMenuItem(text, mnemonic);
-        jMenuItem.addActionListener((event) -> {
-            Logger.debug(strMessage);
-        });
-        return jMenuItem;
-    }
-
 
     private JMenu createJMenu(String menuName, int mnemonic, String accessibleDescription){
         var jmenu = new JMenu(menuName);
