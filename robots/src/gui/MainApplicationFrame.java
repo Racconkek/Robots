@@ -95,44 +95,31 @@ public class MainApplicationFrame extends JFrame
 // 
 //        return menuBar;
 //    }
-    
+
+
+
     private JMenuBar generateMenuBar()
     {
         JMenuBar menuBar = new JMenuBar();
-        
-        JMenu lookAndFeelMenu = new JMenu("Режим отображения");
-        lookAndFeelMenu.setMnemonic(KeyEvent.VK_V);
-        lookAndFeelMenu.getAccessibleContext().setAccessibleDescription(
-                "Управление режимом отображения приложения");
-        
+
+        var lookAndFeelMenu = createJMenu("Режим отображения",
+            KeyEvent.VK_V, "Управление режимом отображения приложения");
+
+        //возможно, фигурные скобонькидля того, чтобы одна из ссылок удалилась из-за выхода из блока.
+        //т.е. у нас две ссылки у переменной и у jменю, и переменная нам больше не нужна
         {
-            JMenuItem systemLookAndFeel = new JMenuItem("Системная схема", KeyEvent.VK_S);
-            systemLookAndFeel.addActionListener((event) -> {
-                setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                this.invalidate();
-            });
+            var systemLookAndFeel = createJMenuItemForLookAndFeelMenu("Системная схема", KeyEvent.VK_S);
             lookAndFeelMenu.add(systemLookAndFeel);
         }
 
         {
-            JMenuItem crossplatformLookAndFeel = new JMenuItem("Универсальная схема", KeyEvent.VK_S);
-            crossplatformLookAndFeel.addActionListener((event) -> {
-                setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                this.invalidate();
-            });
+            var crossplatformLookAndFeel = createJMenuItemForLookAndFeelMenu("Универсальная схема", KeyEvent.VK_S);
             lookAndFeelMenu.add(crossplatformLookAndFeel);
         }
 
-        JMenu testMenu = new JMenu("Тесты");
-        testMenu.setMnemonic(KeyEvent.VK_T);
-        testMenu.getAccessibleContext().setAccessibleDescription(
-                "Тестовые команды");
-        
+    var testMenu = createJMenu("Тесты", KeyEvent.VK_T, "Тестовые команды");
         {
-            JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
-            addLogMessageItem.addActionListener((event) -> {
-                Logger.debug("Новая строка");
-            });
+            var addLogMessageItem = createJMenuItemForTestMenu("Сообщение в лог", KeyEvent.VK_S, "Новая строка");
             testMenu.add(addLogMessageItem);
         }
 
@@ -140,7 +127,35 @@ public class MainApplicationFrame extends JFrame
         menuBar.add(testMenu);
         return menuBar;
     }
-    
+
+
+    private JMenuItem createJMenuItemForLookAndFeelMenu(String text, int mnemonic){
+        var jMenuItem = new JMenuItem(text, mnemonic);
+        jMenuItem.addActionListener((event) -> {
+            setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            this.invalidate(); });
+
+        return jMenuItem;
+    }
+
+
+    private JMenuItem createJMenuItemForTestMenu(String text, int mnemonic, String strMessage){
+        var jMenuItem = new JMenuItem(text, mnemonic);
+        jMenuItem.addActionListener((event) -> {
+            Logger.debug(strMessage);
+        });
+        return jMenuItem;
+    }
+
+
+    private JMenu createJMenu(String menuName, int mnemonic, String accessibleDescription){
+        var jmenu = new JMenu(menuName);
+        jmenu.setMnemonic(mnemonic);
+        jmenu.getAccessibleContext().setAccessibleDescription(
+            accessibleDescription);
+        return jmenu;
+    }
+
     private void setLookAndFeel(String className)
     {
         try
