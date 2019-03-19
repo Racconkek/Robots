@@ -6,16 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
+import jdk.jshell.spi.ExecutionControl;
 import log.Logger;
 
 /**
@@ -106,6 +99,7 @@ public class MainApplicationFrame extends JFrame
         var lookAndFeelMenu = createJMenu("Режим отображения",
             KeyEvent.VK_V, "Управление режимом отображения приложения");
         var testMenu = createJMenu("Тесты", KeyEvent.VK_T, "Тестовые команды");
+        var programMenu = createJMenu("Программа", KeyEvent.VK_B, "Помощь");
         {
             var systemLookAndFeel = createJMenuItem("Системная схема", KeyEvent.VK_S,
                     (event) -> {
@@ -122,13 +116,32 @@ public class MainApplicationFrame extends JFrame
             var addLogMessageItem = createJMenuItem("Сообщение в лог", KeyEvent.VK_S,
                      (event) -> {Logger.debug("Новая строка");});
             testMenu.add(addLogMessageItem);
+
+            var exit = createJMenuItem("Выход", KeyEvent.VK_E, (event) ->{ temp();
+
+            });
+            programMenu.add(exit);
         }
 
+        menuBar.add(programMenu);
         menuBar.add(lookAndFeelMenu);
         menuBar.add(testMenu);
+
         return menuBar;
     }
 
+    private void temp(){
+        UIManager.put("OptionPane.yesButtonText"   , "Да"    );
+        UIManager.put("OptionPane.noButtonText"    , "Нет"   );
+        var result = JOptionPane.showConfirmDialog(this,
+                "Вы УВЕРЕНЫ?",
+                "ОКНО ВЫХОДА",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+        if(result == JOptionPane.YES_OPTION){
+            System.exit(0);
+        }
+    }
 
     private JMenuItem createJMenuItem(String text, int mnemonic, ActionListener action){
         var jMenuItem = new JMenuItem(text, mnemonic);

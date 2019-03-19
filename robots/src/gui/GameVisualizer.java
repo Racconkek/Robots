@@ -75,7 +75,7 @@ public class GameVisualizer extends JPanel
         {
             return;
         }
-        robot.move(10, target.getX(), target.getY());
+        robot.move(10, target.getX(), target.getY(), distance);
     }
     
     private static int round(double value)
