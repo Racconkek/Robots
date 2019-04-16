@@ -3,11 +3,15 @@ package gui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import jdk.jshell.spi.ExecutionControl;
 import log.Logger;
+import primitives.IRobot;
 
 /**
  * Что требуется сделать:
@@ -18,7 +22,7 @@ import log.Logger;
 public class MainApplicationFrame extends JFrame
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
-    
+    private GameWindow gameWindow;
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
@@ -35,7 +39,7 @@ public class MainApplicationFrame extends JFrame
         LogWindow logWindow = createLogWindow();
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
+        gameWindow = new GameWindow();
         gameWindow.setSize(400,  400);
         addWindow(gameWindow);
 
@@ -96,7 +100,6 @@ public class MainApplicationFrame extends JFrame
     {
         JMenuBar menuBar = new JMenuBar();
 
-
         var lookAndFeelMenu = createJMenu("Режим отображения",
             KeyEvent.VK_V, "Управление режимом отображения приложения");
         var testMenu = createJMenu("Тесты", KeyEvent.VK_T, "Тестовые команды");
@@ -119,9 +122,12 @@ public class MainApplicationFrame extends JFrame
             testMenu.add(addLogMessageItem);
 
             var exit = createJMenuItem("Выход", KeyEvent.VK_E, (event) ->{ close();
-
             });
             programMenu.add(exit);
+
+            var addRobotLogic = createJMenuItem("Загрузить логику робота", KeyEvent.VK_L,
+                    (event) -> {chooseFile();});
+            programMenu.add(addRobotLogic);
         }
 
         menuBar.add(programMenu);
@@ -130,6 +136,30 @@ public class MainApplicationFrame extends JFrame
 
         return menuBar;
     }
+
+    private void chooseFile(){
+        var chooser = new JFileChooser();
+        var filter = new FileNameExtensionFilter("Description", "class");
+        chooser.setFileFilter(filter);
+        var result = chooser.showDialog(null, "Загрузить логику бота");
+        if (result == JFileChooser.APPROVE_OPTION){
+            var file = chooser.getSelectedFile();
+            var path = file.getPath();
+
+        }
+    }
+
+//    private void logicLoader(String filePath){
+//        var loader = getClass().getClassLoader();
+//        try {
+//            Class<IRobot> robot = (Class<IRobot>)loader.loadClass(filePath);
+////            gameWindow.setRobotLogic(robot);
+//        }
+//        catch(ClassNotFoundException e)
+//        {
+//            e.printStackTrace();
+//        }
+//    }
 
     private void close(){
         UIManager.put("OptionPane.yesButtonText"   , "Да"    );
